@@ -1,13 +1,15 @@
 version: "3.8"
 services:
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2017-latest
     container_name: migrate_sqlserver
     volumes:
-      - ./sqlserver/init:/init
-      - ./sqlserver:/var/opt/mssql/data
+      - ./docker/sqlserver/init:/init
+      - sqlserver:/var/opt/mssql/data
     environment:
-      - MSSQL_SA_PASSWORD=password_sqlserver
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Passw0rd
+      - TZ=Asia/Tokyo
     networks:
       - migrate-network
     ports:
@@ -15,21 +17,21 @@ services:
     entrypoint: /init/entrypoint.sh
   
   mysql:
-    image: mysql:8.0.32
+    image: mysql:5.7.41
     container_name: migrate_mysql
-    platform: linux/amd64
     volumes:
-      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
-      - ./mysql/init:/docker-entrypoint-initdb.d
-      - ./mysql:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+      - mysql:/var/lib/mysql
     tmpfs:
       - /var/lib/mysql,mode=755
       - /var/log/mysql,mode=755  
     environment:
-      - MYSQL_DATABASE=testdb_mysql
-      - MYSQL_USER=testuser_mysql
+      - MYSQL_DATABASE=db_mysql
+      - MYSQL_USER=user_mysql
       - MYSQL_PASSWORD=password_mysql
       - MYSQL_ROOT_PASSWORD=root_password_mysql
+      - TZ=Asia/Tokyo
     networks:
       - migrate-network
     ports:
@@ -38,3 +40,7 @@ services:
 networks:
   migrate-network:
     name: migrate-network
+
+volumes:
+  sqlserver:
+  mysql:
