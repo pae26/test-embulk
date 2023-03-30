@@ -7,15 +7,15 @@ in:
   database: '{{env.SQLSERVER_DB}}'
   query: |
     SELECT
-      idSqlserver AS id_mysql,
-      nameSqlserver AS name_mysql,
-      (SELECT CASE genderSqlserver
+      id_sqlserver AS id_mysql,
+      name_sqlserver AS name_mysql,
+      (SELECT CASE gender_sqlserver
       WHEN 1 THEN 'male'
       WHEN 2 THEN 'female'
       WHEN 3 THEN 'others'
       END) AS gender_mysql
     FROM
-      usersSqlserver
+      users_sqlserver
 out:
   type: mysql
   host: '{{env.MYSQL_HOST}}'
@@ -32,4 +32,4 @@ out:
     gender_mysql:
       type: ENUM('male', 'female', 'others')
   options: {connectTimeout: 20000}
-  mode: truncate_insert
+  mode: insert
